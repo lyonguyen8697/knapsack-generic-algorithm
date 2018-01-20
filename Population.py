@@ -4,14 +4,16 @@ from ultis import pickRandom
 
 
 class Population:
-    elitism = 0.2
     chromosomes = []
 
-    def __init__(self, size=20):
+    def __init__(self, size=20, elitism=0.2, maxWeight=1000, mutationRate=0.7):
         self.size = size
+        self.elitism = elitism
+        self.maxWeight = maxWeight
+        self.mutationRate = mutationRate
         self.fill()
 
-    def run(self, threshold = 1000, noImprovement = 0, index = 0):
+    def run(self, threshold = 1000, noImprovement=0, index=0, displayInterval=10):
         if noImprovement < threshold:
             lastScore = self.chromosomes[0].score
             self.generation()
@@ -19,15 +21,16 @@ class Population:
                 noImprovement += 1
             else:
                 noImprovement = 0
-            index += 1
-            if index % 10 == 0:
+            if index % displayInterval == 0:
                 self.display(index, noImprovement)
+            index += 1
             Timer(0.001, self.run, (threshold, noImprovement, index)).start()
-        self.display(index, noImprovement)
+        else:
+            self.display(index, noImprovement)
 
     def display(self, index, noImprovement):
         fitness = self.chromosomes[0]
-        print "score: %d value: %d weight: %d generation: %d noImprovement: %d" % (fitness.score, fitness.value, fitness.weight, index, noImprovement)
+        print "score: %d value: %d weight: %d generation: %d no change in: %d" % (fitness.score, fitness.value, fitness.weight, index, noImprovement)
 
     def generation(self):
         self.sort()
@@ -40,7 +43,7 @@ class Population:
         length = len(self.chromosomes)
         while length < self.size:
             if length < self.size / 3:
-                self.chromosomes.append(Chromosome())
+                self.chromosomes.append(Chromosome(maxWeight=self.maxWeight, mutationRate=self.mutationRate))
             else:
                 self.mate()
             length = len(self.chromosomes)

@@ -11,15 +11,15 @@ with open("elements.json") as f:
 class Chromosome:
     weight = 0
     value = 0
-    maxWeight = 1000
-    mutationRate = 0.7
     score = 0
 
-    def __init__(self, members=None):
+    def __init__(self, members=None, maxWeight=1000, mutationRate=0.7):
         if not members:
             self.random()
         else:
             self.members = members
+        self.maxWeight = maxWeight
+        self.mutationRate = mutationRate
         self.mutate()
         self.calcScore()
 
@@ -60,6 +60,6 @@ class Chromosome:
                 child2[key] = self.members[key].copy()
                 child1[key] = other.members[key].copy()
             index += 1
-        child1 = Chromosome(child1)
-        child2 = Chromosome(child2)
+        child1 = Chromosome(child1, self.maxWeight, self.mutationRate)
+        child2 = Chromosome(child2, self.maxWeight, self.mutationRate)
         return [child1, child2]
